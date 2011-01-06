@@ -1,0 +1,42 @@
+== 1.0.1 2010-10-08
+
+* 3 enhancement; updated licensing ambiguity
+  * License.txt (Balwinder S Dheeman).
+  * lib/nntp/version.rb (Balwinder S Dheeman).
+  * lib/nntp.rb (Balwinder S Dheeman).
+* 5 cleanup; whitespace
+  * test/test_nntp.rb (Balwinder S Dheeman).
+  * website/stylesheets/screen.css (Balwinder S Dheeman).
+  * Authors.txt (Balwinder S Dheeman).
+  * config/requirements.rb (Balwinder S Dheeman).
+  * README.txt (Balwinder S Dheeman).
+
+== 1.0.0 2007-12-21
+
+* 1 enhancement
+  * Convert to RubyGem (Albert Vernon).
+
+== 0.0.4 2006-01-03
+
+* 1 enhancement
+  * Add new methods #io_body and #io_longcmd (Mark Triggs).
+* 2 bug fixes
+  * Fix backward compatibility with ruby-1.8.2 (Mark Triggs).
+  * Identify a single dot (.) as an EOF marker (Mark Triggs).
+
+== 0.0.3 2005-12-28
+
+* 2 bug fixes
+  * Fix minor bugs in Makefile (Balwinder S Dheeman).
+  * Fix minor bugs in nntp.rb (Mark Triggs).
+
+== 0.0.2 2005-05-15
+
+* 1 enhancement
+  * Create .deb and .rpm packages (alien).
+
+== 0.0.1 2005-05-01
+
+* 1 enhancement
+  * Alpha code, stated development (Balwinder S Dheeman).
+

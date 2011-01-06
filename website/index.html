@@ -1,0 +1,254 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <link rel="stylesheet" href="stylesheets/screen.css" type="text/css" media="screen" />
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>
+      Net::NNTP Client Library
+  </title>
+  <script src="javascripts/rounded_corners_lite.inc.js" type="text/javascript"></script>
+<style>
+
+</style>
+  <script type="text/javascript">
+    window.onload = function() {
+      settings = {
+          tl: { radius: 10 },
+          tr: { radius: 10 },
+          bl: { radius: 10 },
+          br: { radius: 10 },
+          antiAlias: true,
+          autoPad: true,
+          validTags: ["div"]
+      }
+      var versionBox = new curvyCorners(settings, document.getElementById("version"));
+      versionBox.applyCornersToAll();
+    }
+  </script>
+</head>
+<body>
+<div id="main">
+
+    <h1>Net::NNTP Client Library</h1>
+    <div id="version" class="clickable" onclick='document.location = "http://rubyforge.org/projects/nntp"; return false'>
+      <p>Get Version</p>
+      <a href="http://rubyforge.org/projects/nntp" class="numbers">1.0.0</a>
+    </div>
+    <h1>&#x2192; &#8216;nntp&#8217;</h1>
+
+
+	<h2>What</h2>
+
+
+	<p>This gem allows you to to retrieve and post Usenet news articles via <span class="caps">NNTP</span>, the Network News Transfer Protocol. For details of <span class="caps">NNTP</span> itself, see <a href="http://www.ietf.org/rfc/rfc977.txt"><span class="caps">RFC977</span></a>.</p>
+
+
+	<p>This library does <span class="caps">NOT</span> provide functions to compose Usenet news articles. You must create and format them yourself per Standard for Interchange of Usenet Messages.  See <a href="http://www.ietf.org/rfc/rfc850.txt"><span class="caps">RFC850</span></a>, <a href="http://www.ietf.org/rfc/rfc2047.txt"><span class="caps">RFC2047</span></a>.</p>
+
+
+	<h2>Installing</h2>
+
+
+	<p><pre class='syntax'><span class="ident">sudo</span> <span class="ident">gem</span> <span class="ident">install</span> <span class="ident">nntp</span></pre></p>
+
+
+	<p>Alternatively, you may download the gem from the <a href="http://rubyforge.org/projects/nntp">project info page</a> and install manually.</p>
+
+
+	<h2>The basics</h2>
+
+
+	<h3>Posting Messages</h3>
+
+
+	<p>You must open a connection to a <span class="caps">NNTP</span> server before posting messages. The first argument is the address of your <span class="caps">NNTP</span> server, and the second argument is the port number. Using <span class="caps">NNTP</span>.start with a block is the simplest way to do this because the <span class="caps">NNTP</span> connection closes automatically after the block executes.</p>
+
+
+	<p><pre class='syntax'>
+  <span class="ident">require</span> <span class="punct">'</span><span class="string">rubygems</span><span class="punct">'</span>
+  <span class="ident">require</span> <span class="punct">'</span><span class="string">nntp</span><span class="punct">'</span>
+  <span class="constant">Net</span><span class="punct">::</span><span class="constant">NNTP</span><span class="punct">.</span><span class="ident">start</span><span class="punct">('</span><span class="string">your.nntp.server</span><span class="punct">',</span> <span class="number">119</span><span class="punct">)</span> <span class="keyword">do</span> <span class="punct">|</span><span class="ident">nntp</span><span class="punct">|</span>
+    <span class="comment"># Use the NNTP object nntp only in this block.</span>
+  <span class="keyword">end</span>
+</pre></p>
+
+
+	<p>Replace ‘your.nntp.server’ with your <span class="caps">NNTP</span> server. Normally your systems administrator or internet service provider supplies a server for you.</p>
+
+
+	<p>Then you can post messages.</p>
+
+
+	<p><pre class='syntax'>
+  <span class="ident">require</span> <span class="punct">'</span><span class="string">date</span><span class="punct">'</span>
+  <span class="ident">date</span> <span class="punct">=</span> <span class="constant">DateTime</span><span class="punct">.</span><span class="ident">now</span><span class="punct">().</span><span class="ident">strftime</span><span class="punct">(</span><span class="ident">fmt</span><span class="punct">='</span><span class="string">%a, %d %b %Y %T %z</span><span class="punct">')</span>
+
+  <span class="ident">msgstr</span> <span class="punct">=</span> <span class="punct">&lt;&lt;</span><span class="constant">END_OF_MESSAGE</span><span class="string">
+  From: Your Name &lt;your@mail.address&gt;
+  Newsgroups: news.group.one, news.group.two ...
+  Subject: test message
+  Date: <span class="expr">#{date}</span>
+
+  This is a test message.
+  END_OF_MESSAGE
+
+  require 'rubygems'
+  require 'nntp'
+  Net::NNTP.start('your.nntp.server', 119) do |nntp|
+    nntp.post msgstr
+  end<span class="normal">
+</span></span></pre></p>
+
+
+	<p><span class="caps">NOTE</span>: The <span class="caps">NNTP</span> message headers such as <code>Date:</code>, <code>Message-ID:</code>, and <code>Path:</code>, if ommited, may automatically be added by your Usenet news server; however, it is best not to rely on this behavior.</p>
+
+
+	<h3>Reading Messages</h3>
+
+
+	<p>This snippet will display all subject lines within a particular news group.</p>
+
+
+	<p><pre class='syntax'>
+  <span class="ident">require</span> <span class="punct">'</span><span class="string">rubygems</span><span class="punct">'</span>
+  <span class="ident">require</span> <span class="punct">'</span><span class="string">nntp</span><span class="punct">'</span>
+
+  <span class="ident">newsgroup</span> <span class="punct">=</span> <span class="punct">'</span><span class="string">comp.lang.ruby</span><span class="punct">'</span>
+
+  <span class="constant">Net</span><span class="punct">::</span><span class="constant">NNTP</span><span class="punct">.</span><span class="ident">start</span><span class="punct">('</span><span class="string">your.nntp.server</span><span class="punct">',</span> <span class="number">119</span><span class="punct">)</span> <span class="keyword">do</span> <span class="punct">|</span><span class="ident">nntp</span><span class="punct">|</span>
+    <span class="ident">message_ids</span> <span class="punct">=</span> <span class="ident">nntp</span><span class="punct">.</span><span class="ident">listgroup</span><span class="punct">(</span><span class="ident">newsgroup</span><span class="punct">)</span>
+    <span class="ident">message_ids</span><span class="punct">[</span><span class="number">1</span><span class="punct">].</span><span class="ident">each</span> <span class="keyword">do</span> <span class="punct">|</span><span class="ident">id</span><span class="punct">|</span>
+      <span class="ident">nntp</span><span class="punct">.</span><span class="ident">head</span><span class="punct">(</span><span class="ident">id</span><span class="punct">).</span><span class="ident">each</span> <span class="keyword">do</span> <span class="punct">|</span><span class="ident">header</span><span class="punct">|</span>
+        <span class="ident">header</span><span class="punct">.</span><span class="ident">each</span> <span class="punct">{</span> <span class="punct">|</span><span class="ident">line</span><span class="punct">|</span> <span class="ident">puts</span><span class="punct">(</span><span class="ident">line</span><span class="punct">)</span> <span class="keyword">if</span> <span class="ident">line</span><span class="punct">.</span><span class="ident">index</span><span class="punct">('</span><span class="string">Subject:</span><span class="punct">')</span> <span class="punct">}</span>
+        <span class="keyword">end</span>
+    <span class="keyword">end</span>
+  <span class="keyword">end</span>
+</pre></p>
+
+
+	<h3>Closing the Session</h3>
+
+
+	<p>You <span class="caps">MUST</span> close the <span class="caps">NNTP</span> session after posting messages by calling the Net::NNTP#finish method:</p>
+
+
+	<p><pre class='syntax'>
+  <span class="comment"># using NNTP#finish</span>
+  <span class="ident">nntp</span> <span class="punct">=</span> <span class="constant">Net</span><span class="punct">::</span><span class="constant">NNTP</span><span class="punct">.</span><span class="ident">start</span><span class="punct">('</span><span class="string">your.nntp.server</span><span class="punct">',</span> <span class="number">119</span><span class="punct">)</span>
+  <span class="ident">nntp</span><span class="punct">.</span><span class="ident">post</span> <span class="ident">msgstr</span>
+  <span class="ident">nntp</span><span class="punct">.</span><span class="ident">finish</span>
+</pre></p>
+
+
+	<p>You can also use the block form of <span class="caps">NNTP</span>.start/NNTP#start. This closes the <span class="caps">NNTP</span> session automatically:</p>
+
+
+	<p><pre class='syntax'>
+  <span class="comment"># using block form of NNTP.start</span>
+  <span class="constant">Net</span><span class="punct">::</span><span class="constant">NNTP</span><span class="punct">.</span><span class="ident">start</span><span class="punct">('</span><span class="string">your.nntp.server</span><span class="punct">',</span> <span class="number">119</span><span class="punct">)</span> <span class="keyword">do</span> <span class="punct">|</span><span class="ident">nntp</span><span class="punct">|</span>
+    <span class="ident">nntp</span><span class="punct">.</span><span class="ident">post</span> <span class="ident">msgstr</span>
+  <span class="keyword">end</span>
+</pre></p>
+
+
+	<p>We strongly recommend the latter scheme since it is simpler and more robust.</p>
+
+
+	<h3><span class="caps">NNTP</span> Authentication</h3>
+
+
+	<p>The Net::NNTP class may support various authentication schemes depending on your news server‘s reponse to <span class="caps">CAPABILITIES</span> command. To use <span class="caps">NNTP</span> authentication, pass extra arguments to <span class="caps">NNTP</span>.start/NNTP#start.</p>
+
+
+	<p>See <a href="http://www.ietf.org/internet-drafts/draft-ietf-nntpext-authinfo-07.txt"><span class="caps">NNTP</span> Extension for Authentication</a>.</p>
+
+
+	<p><pre class='syntax'>
+  <span class="constant">Net</span><span class="punct">::</span><span class="constant">NNTP</span><span class="punct">.</span><span class="ident">start</span><span class="punct">('</span><span class="string">your.nntp.server</span><span class="punct">',</span> <span class="number">119</span><span class="punct">,</span>
+                  <span class="punct">'</span><span class="string">YourAccountName</span><span class="punct">',</span> <span class="punct">'</span><span class="string">YourPassword</span><span class="punct">',</span> <span class="symbol">:method</span><span class="punct">)</span>
+</pre></p>
+
+
+	<p>Where <code>:method</code> can be one of ‘gassapi’, ‘digest_md5’, ‘cram_md5’, ‘starttls’, ‘external’, ‘plain’, ‘generic’, ‘simple’ or ‘original’.</p>
+
+
+	<p>In the case of method <code>:generic</code>, arguments should be passed to a format string as follows:</p>
+
+
+	<p><pre class='syntax'>
+  <span class="constant">Net</span><span class="punct">::</span><span class="constant">NNTP</span><span class="punct">.</span><span class="ident">start</span><span class="punct">('</span><span class="string">your.nntp.server</span><span class="punct">',</span> <span class="number">119</span><span class="punct">,</span>
+                  <span class="punct">&quot;</span><span class="string">format</span><span class="punct">&quot;,</span> <span class="punct">*</span><span class="ident">arguments</span><span class="punct">,</span> <span class="symbol">:generic</span><span class="punct">)</span>
+</pre></p>
+
+
+	<p><span class="caps">NOTE</span>: With the exception of <code>:generic</code>, the authentication mechanism will fallback to a less secure scheme if your Usenet server does not support the method you selected.</p>
+
+
+	<h2>How to Submit Patches</h2>
+
+
+	<ul>
+	<li>Read the <a href="http://drnicwilliams.com/2007/06/01/8-steps-for-fixing-other-peoples-code/">8 steps for fixing other people&#8217;s code</a>.</li>
+		<li>The trunk repository is <code>svn://rubyforge.org/var/svn/nntp/trunk</code> for anonymous access.</li>
+		<li>You can upload your patch to the &#8220;Patches&#8221; section of the <a href="http://rubyforge.org/projects/nntp">project info page</a>.</li>
+	</ul>
+
+
+	<h2>License</h2>
+
+
+	<p>This code is free to use under the terms of version 2.1 of the <span class="caps">GNU</span> Lesser General Public License.</p>
+
+
+	<h2>Donate</h2>
+
+
+Any contribution of yours, however small it may be, will highly be appreciated and used for further development of this and other F/LOSS (Free/Libre Open Source Software) Projects.
+<form action="https://www.paypal.com/cgi-bin/webscr" method="post">
+  <input type="hidden" name="cmd" value="_xclick" />
+  <input type="hidden" name="business" value="bsd@rubyforge.org" />
+  <input type="image" src="https://www.paypal.com/en_US/i/logo/PayPal_mark_37x23.gif" style="border:0" name="submit" alt="[ Make payments with PayPal -it's fast, free and secure! ]" title="Please do donate to keep this project alive!" />
+</form>
+
+	<h2>Documentation</h2>
+
+
+	<p>In addition to this page, you can also view the automatically generated RDocs in the &#8220;DocManager: Project Documentation&#8221; 
+section of the <a href="http://rubyforge.org/projects/nntp">project info page</a>.  If you elect to install the RI documentation
+when you install the gem, you can afterwards issue the following command for the <span class="caps">API</span> reference:</p>
+
+
+<code>
+ri Net::NNTP
+</code>
+
+	<h2>Similar Gems</h2>
+
+
+	<p>Anton Bangratz&#8217;s <a href="http://rubyforge.org/projects/ruby-net-nntp/">ruby-net-nntp</a></p>
+
+
+	<h2>Credits</h2>
+
+
+	<ul>
+	<li><a href="http://rubyforge.org/">RubyForge</a> – hosting and project management</li>
+		<li><a href="http://newgem.rubyforge.org/">newgem</a> &#8211; new gem generator</li>
+	</ul>
+
+
+	<h2>Where to get help</h2>
+
+
+	<p>If you need assistance with this gem, visit the <a href="http://rubyforge.org/projects/nntp">project info page</a> to file a bug, make a support request, or suggest a new feature.</p>
+    <p class="coda">
+      Albert Vernon, 2nd January 2008<br>
+      Theme extended from <a href="http://rb2js.rubyforge.org/">Paul Battley</a>
+    </p>
+</div>
+
+<!-- insert site tracking codes here, like Google Urchin -->
+
+</body>
+</html>

@@ -1,0 +1,18 @@
+Net::NNTP Client Library
+========================
+
+Active Developers:
+------------------
+
+Balwinder S "bsd" Dheeman <bsd/AT/rubyforge.org> - Lead developer
+  AIM: bdheeman
+  ICQ: 93365210
+  IRC: bdheeman@irc.freenode.net
+  GTalk: bdheeman/AT/gmail.com
+  Jabber: bdheeman/AT/jabber.org
+  MSN: bdheeman/AT/hotmail.com
+  Yahoo: bdheeman
+
+Albert Vernon <aevernon/AT/rubyforge.org>
+Bob Schafer <rschafer/AT/rubyforge.org>
+Mark Triggs <mark/AT/dishevelled.net>

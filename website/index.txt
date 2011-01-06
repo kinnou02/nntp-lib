@@ -1,0 +1,163 @@
+h1. Net::NNTP Client Library
+
+h1. &#x2192; 'nntp'
+
+
+h2. What
+
+This gem allows you to to retrieve and post Usenet news articles via NNTP, the Network News Transfer Protocol. For details of NNTP itself, see "RFC977":http://www.ietf.org/rfc/rfc977.txt.
+
+This library does NOT provide functions to compose Usenet news articles. You must create and format them yourself per Standard for Interchange of Usenet Messages.  See "RFC850":http://www.ietf.org/rfc/rfc850.txt, "RFC2047":http://www.ietf.org/rfc/rfc2047.txt.
+
+h2. Installing
+
+<pre syntax="ruby">sudo gem install nntp</pre>
+
+Alternatively, you may download the gem from the "project info page":http://rubyforge.org/projects/nntp and install manually.
+
+h2. The basics
+
+h3. Posting Messages
+
+You must open a connection to a NNTP server before posting messages. The first argument is the address of your NNTP server, and the second argument is the port number. Using NNTP.start with a block is the simplest way to do this because the NNTP connection closes automatically after the block executes.
+
+<pre syntax="ruby">
+  require 'rubygems'
+  require 'nntp'
+  Net::NNTP.start('your.nntp.server', 119) do |nntp|
+    # Use the NNTP object nntp only in this block.
+  end
+</pre>
+
+Replace ‘your.nntp.server’ with your NNTP server. Normally your systems administrator or internet service provider supplies a server for you.
+
+Then you can post messages.
+
+<pre syntax="ruby">
+  require 'date'
+  date = DateTime.now().strftime(fmt='%a, %d %b %Y %T %z')
+
+  msgstr = <<END_OF_MESSAGE
+  From: Your Name <your@mail.address>
+  Newsgroups: news.group.one, news.group.two ...
+  Subject: test message
+  Date: #{date}
+
+  This is a test message.
+  END_OF_MESSAGE
+
+  require 'rubygems'
+  require 'nntp'
+  Net::NNTP.start('your.nntp.server', 119) do |nntp|
+    nntp.post msgstr
+  end
+</pre>
+
+NOTE: The NNTP message headers such as @Date:@, @Message-ID:@, and @Path:@, if ommited, may automatically be added by your Usenet news server; however, it is best not to rely on this behavior.
+
+h3. Reading Messages
+
+This snippet will display all subject lines within a particular news group.
+
+<pre syntax="ruby">
+  require 'rubygems'
+  require 'nntp'
+
+  newsgroup = 'comp.lang.ruby'
+
+  Net::NNTP.start('your.nntp.server', 119) do |nntp|
+    message_ids = nntp.listgroup(newsgroup)
+    message_ids[1].each do |id|
+      nntp.head(id).each do |header|
+        header.each { |line| puts(line) if line.index('Subject:') }
+        end
+    end
+  end
+</pre>
+
+h3. Closing the Session
+
+You MUST close the NNTP session after posting messages by calling the Net::NNTP#finish method:
+
+<pre syntax="ruby">
+  # using NNTP#finish
+  nntp = Net::NNTP.start('your.nntp.server', 119)
+  nntp.post msgstr
+  nntp.finish
+</pre>
+
+You can also use the block form of NNTP.start/NNTP#start. This closes the NNTP session automatically:
+
+<pre syntax="ruby">
+  # using block form of NNTP.start
+  Net::NNTP.start('your.nntp.server', 119) do |nntp|
+    nntp.post msgstr
+  end
+</pre>
+
+We strongly recommend the latter scheme since it is simpler and more robust.
+
+h3. NNTP Authentication
+
+The Net::NNTP class may support various authentication schemes depending on your news server‘s reponse to CAPABILITIES command. To use NNTP authentication, pass extra arguments to NNTP.start/NNTP#start.
+
+See "NNTP Extension for Authentication":http://www.ietf.org/internet-drafts/draft-ietf-nntpext-authinfo-07.txt.
+
+<pre syntax="ruby">
+  Net::NNTP.start('your.nntp.server', 119,
+                  'YourAccountName', 'YourPassword', :method)
+</pre>
+
+Where @:method@ can be one of ‘gassapi’, ‘digest_md5’, ‘cram_md5’, ‘starttls’, ‘external’, ‘plain’, ‘generic’, ‘simple’ or ‘original’.
+
+In the case of method @:generic@, arguments should be passed to a format string as follows:
+
+<pre syntax="ruby">
+  Net::NNTP.start('your.nntp.server', 119,
+                  "format", *arguments, :generic)
+</pre>
+
+NOTE: With the exception of @:generic@, the authentication mechanism will fallback to a less secure scheme if your Usenet server does not support the method you selected.
+
+
+h2. How to Submit Patches
+
+* Read the "8 steps for fixing other people's code":http://drnicwilliams.com/2007/06/01/8-steps-for-fixing-other-peoples-code/.
+* The trunk repository is <code>svn://rubyforge.org/var/svn/nntp/trunk</code> for anonymous access.
+* You can upload your patch to the "Patches" section of the "project info page":http://rubyforge.org/projects/nntp.
+
+h2. License
+
+This code is free to use under the terms of version 2.1 of the GNU Lesser General Public License.
+
+h2. Donate
+
+Any contribution of yours, however small it may be, will highly be appreciated and used for further development of this and other F/LOSS (Free/Libre Open Source Software) Projects.
+<form action="https://www.paypal.com/cgi-bin/webscr" method="post">
+  <input type="hidden" name="cmd" value="_xclick" />
+  <input type="hidden" name="business" value="bsd@rubyforge.org" />
+  <input type="image" src="https://www.paypal.com/en_US/i/logo/PayPal_mark_37x23.gif" style="border:0" name="submit" alt="[ Make payments with PayPal -it's fast, free and secure! ]" title="Please do donate to keep this project alive!" />
+</form>
+
+h2. Documentation
+
+In addition to this page, you can also view the automatically generated RDocs in the "DocManager: Project Documentation"
+section of the "project info page":http://rubyforge.org/projects/nntp.  If you elect to install the RI documentation
+when you install the gem, you can afterwards issue the following command for the API reference:
+
+<code>
+ri Net::NNTP
+</code>
+
+h2. Similar Gems
+
+Anton Bangratz's "ruby-net-nntp":http://rubyforge.org/projects/ruby-net-nntp/
+
+h2. Credits
+
+* "RubyForge":http://rubyforge.org/ – hosting and project management
+* "newgem":http://newgem.rubyforge.org/ - new gem generator
+
+h2. Where to get help
+
+If you need assistance with this gem, visit the "project info page":http://rubyforge.org/projects/nntp to file a bug, make a support request, or suggest a new feature.
