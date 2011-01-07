@@ -611,6 +611,12 @@ module Net  #:nodoc:
       return stat[0..2], text
     end
 
+    # NEWNEWS <yymmdd> <hhmmss> [GMT]
+    def newnews(date, time, tzone = nil)
+      stat, text = longcmd("NEWNEWS #{date} #{time} #{tzone}".strip)
+      return stat[0..2], text
+    end
+
     # NEXT
     def next
       stat = shortcmd('NEXT')
