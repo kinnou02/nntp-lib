@@ -605,9 +605,9 @@ module Net  #:nodoc:
     end
     private :mode_reader  #:nodoc:
 
-    # NEWGROUPS <yymmdd> <hhmmss> [GMT]
-    def newgroups(date, time, tzone = nil)
-      stat, text = longcmd("NEWGROUPS #{date} #{time} #{tzone}".strip)
+    # NEWGROUPS <[yy]yymmdd> <hhmmss> [GMT]
+    def newgroups(group, date, time, tzone = nil)
+      stat, text = longcmd("NEWGROUPS #{group} #{date} #{time} #{tzone}".strip)
       return stat[0..2], text
     end
 
